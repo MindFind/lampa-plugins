@@ -1,2 +1,2 @@
 # lampa-plugins
-Мои плагины для Lampa
+My lampa-plugins
