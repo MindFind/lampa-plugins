@@ -1,9 +1,8 @@
 (function () {
     'use strict';
 
-    // Плагин: Только IMDb рейтинг в полной карточке (без голосов)
+    // Плагин: Только чистый IMDb рейтинг в полной карточке (без голосов)
     // Ключ OMDb: 479575b3 (не публикуй публично!)
-    // Последнее обновление: чистый рейтинг без наездов
 
     var API_KEY = '479575b3';
     var CACHE_TIME = 60 * 60 * 24 * 7 * 1000; // 7 дней
@@ -48,7 +47,7 @@
         var render = Lampa.Activity.active().activity.render();
         $('.wait_rating', render).remove();
 
-        // Показываем чистый рейтинг IMDb
+        // Показываем чистый рейтинг IMDb без голосов
         $('.rate--imdb', render)
             .removeClass('hide')
             .css({
