@@ -1,10 +1,9 @@
 (function () {
     'use strict';
 
-    // ────────────────────────────────────────────────
-    // Плагин: Только IMDb + голоса в полной карточке
+    // Плагин: Только IMDb рейтинг в полной карточке (без голосов)
     // Ключ OMDb: 479575b3 (не публикуй публично!)
-    // ────────────────────────────────────────────────
+    // Последнее обновление: чистый рейтинг без наездов
 
     var API_KEY = '479575b3';
     var CACHE_TIME = 60 * 60 * 24 * 7 * 1000; // 7 дней
@@ -14,106 +13,66 @@
         var network = new Lampa.Reguest();
         var imdb_id = card.imdb_id;
 
-        // Проверяем кэш
         var cached = getCache(card.id);
         if (cached !== false) {
-            showRating(cached.rating, cached.votes);
+            showRating(cached);
             return;
         }
 
         if (!imdb_id || !imdb_id.startsWith('tt')) {
-            showRating('—', 'N/A');
-            setCache(card.id, { rating: '—', votes: 'N/A' });
+            showRating('—');
+            setCache(card.id, '—');
             return;
         }
 
         var url = 'https://www.omdbapi.com/?i=' + imdb_id + '&apikey=' + API_KEY;
 
         network.silent(url, function (json) {
-            var data = extractData(json);
-            setCache(card.id, data);
-            showRating(data.rating, data.votes);
+            var rating = extractRating(json);
+            setCache(card.id, rating);
+            showRating(rating);
         }, function () {
-            var data = { rating: '—', votes: 'N/A' };
-            setCache(card.id, data);
-            showRating(data.rating, data.votes);
+            setCache(card.id, '—');
+            showRating('—');
         }, false, { timeout: 10000 });
     }
 
-    function extractData(json) {
-        if (json && json.Response === 'True') {
-            var rating = (json.imdbRating && json.imdbRating !== 'N/A') 
-                ? parseFloat(json.imdbRating).toFixed(1) 
-                : '—';
-
-            var votes = json.imdbVotes || 'N/A';
-            if (votes !== 'N/A') {
-                var num = parseInt(votes.replace(/,/g, '')) || 0;
-                if (num > 1000000) {
-                    votes = (num / 1000000).toFixed(1) + 'M';
-                } else if (num > 1000) {
-                    votes = Math.round(num / 1000) + 'K';
-                } else {
-                    votes = num.toLocaleString();
-                }
-            }
-
-            return { rating: rating, votes: votes };
+    function extractRating(json) {
+        if (json && json.Response === 'True' && json.imdbRating && json.imdbRating !== 'N/A') {
+            return parseFloat(json.imdbRating).toFixed(1);
         }
-        return { rating: '—', votes: 'N/A' };
+        return '—';
     }
 
-  function showRating(rating, votes) {
-    var render = Lampa.Activity.active().activity.render();
-    $('.wait_rating', render).remove();
+    function showRating(rating) {
+        var render = Lampa.Activity.active().activity.render();
+        $('.wait_rating', render).remove();
 
-    var text = rating || '—';
-    if (votes && votes !== 'N/A') {
-        text += ' <small>(' + votes + ')</small>';
-    }
+        // Показываем чистый рейтинг IMDb
+        $('.rate--imdb', render)
+            .removeClass('hide')
+            .css({
+                'display': 'inline-flex !important',
+                'align-items': 'center',
+                'min-width': '80px',
+                'padding-right': '0.8em',
+                'margin-right': '1em'
+            })
+            .find('> div').eq(0)
+            .text(rating || '—');
 
-    // Показываем и оформляем IMDb с запасом места
-    var imdbBlock = $('.rate--imdb', render);
-    imdbBlock
-        .removeClass('hide')
-        .css({
-            'display': 'inline-flex !important',
+        // Полностью удаляем TMDB и KP
+        $('.rate--tmdb, .rate--kp', render).remove();
+
+        // Корректируем строку рейтингов
+        $('.full-start-new__rate-line', render).css({
+            'display': 'flex',
             'align-items': 'center',
-            'min-width': '120px',          // ← даём блоку минимум места, чтобы скобка не наезжала
-            'padding-right': '1em',        // ← добавляем отступ справа
-            'margin-right': '1em'          // ← отступ до следующего элемента (если есть)
+            'gap': '0.8em',
+            'justify-content': 'flex-start',
+            'flex-wrap': 'nowrap'
         });
-
-    // Сам текст рейтинга + голоса — ставим в первый div
-    imdbBlock.find('> div').eq(0)
-        .css({
-            'white-space': 'nowrap',       // не переносим строку
-            'overflow': 'visible',         // разрешаем вылезать, но с отступом
-            'padding-right': '0.5em'       // ← небольшой внутренний отступ справа
-        })
-        .html(text);
-
-    // Дополнительно фиксируем подпись "IMDB" (второй div)
-    imdbBlock.find('> div').eq(1)
-        .css({
-            'font-size': '0.9em',
-            'color': '#999',               // можно сделать чуть серым, если хочешь
-            'margin-left': '0.3em'         // небольшой отступ слева от подписи
-        });
-
-    // Если остались какие-то следы от TMDB/KP — на всякий случай
-    $('.rate--tmdb, .rate--kp', render).remove();
-
-    // Финальная корректировка строки рейтингов
-    $('.full-start-new__rate-line', render).css({
-        'display': 'flex',
-        'align-items': 'center',
-        'gap': '0.8em',
-        'justify-content': 'flex-start',
-        'flex-wrap': 'nowrap',
-        'overflow': 'hidden'           // на случай переполнения
-    });
-}
+    }
 
     // Кэш
     function getCache(movieId) {
@@ -130,10 +89,10 @@
         return false;
     }
 
-    function setCache(movieId, data) {
+    function setCache(movieId, rating) {
         var cache = Lampa.Storage.cache(CACHE_NAME, 500, {});
         cache[movieId] = {
-            ...data,
+            rating: rating,
             time: Date.now()
         };
         Lampa.Storage.set(CACHE_NAME, cache);
