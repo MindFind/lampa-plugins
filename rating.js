@@ -64,23 +64,43 @@
     }
 
     function showRating(rating, votes) {
-        var render = Lampa.Activity.active().activity.render();
-        $('.wait_rating', render).remove();
+    var render = Lampa.Activity.active().activity.render();
+    $('.wait_rating', render).remove();
 
-        var text = rating || '—';
-        if (votes && votes !== 'N/A') {
-            text += ' <small>(' + votes + ')</small>';
-        }
-
-        $('.rate--imdb', render)
-            .removeClass('hide')
-            .find('> div').eq(0)
-            .html(text);
-
-        // Прячем все ненужные рейтинги
-        $('.rate--tmdb', render).addClass('hide');
-        $('.rate--kp', render).addClass('hide');
+    var text = rating || '—';
+    if (votes && votes !== 'N/A') {
+        text += ' <small>(' + votes + ')</small>';
     }
+
+    // Показываем IMDb
+    var imdbBlock = $('.rate--imdb', render);
+    imdbBlock
+        .removeClass('hide')
+        .css({ 'display': 'flex', 'align-items': 'center' })  // на всякий случай выравниваем
+        .find('> div').eq(0)
+        .html(text);
+
+    // Агрессивно прячем TMDB и KP
+    $('.rate--tmdb, .rate--kp', render).each(function() {
+        $(this)
+            .addClass('hide')
+            .css({
+                'display': 'none !important',   // двойное !important для перекрытия стилей Lampa
+                'visibility': 'hidden',
+                'opacity': '0',
+                'width': '0',
+                'height': '0',
+                'margin': '0',
+                'padding': '0'
+            });
+    });
+
+    // Дополнительно убираем возможные пустые места в строке рейтингов
+    $('.full-start-new__rate-line', render).css({
+        'justify-content': 'flex-start',  // сдвигаем всё влево, чтобы не было дыр
+        'gap': '0.5em'                    // уменьшаем расстояние между оставшимися элементами
+    });
+}
 
     // Кэш
     function getCache(movieId) {
