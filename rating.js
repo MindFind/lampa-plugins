@@ -63,7 +63,7 @@
         return { rating: '—', votes: 'N/A' };
     }
 
-    function showRating(rating, votes) {
+  function showRating(rating, votes) {
     var render = Lampa.Activity.active().activity.render();
     $('.wait_rating', render).remove();
 
@@ -72,33 +72,46 @@
         text += ' <small>(' + votes + ')</small>';
     }
 
-    // Показываем IMDb
+    // Показываем и оформляем IMDb с запасом места
     var imdbBlock = $('.rate--imdb', render);
     imdbBlock
         .removeClass('hide')
-        .css({ 'display': 'flex', 'align-items': 'center' })  // на всякий случай выравниваем
-        .find('> div').eq(0)
+        .css({
+            'display': 'inline-flex !important',
+            'align-items': 'center',
+            'min-width': '120px',          // ← даём блоку минимум места, чтобы скобка не наезжала
+            'padding-right': '1em',        // ← добавляем отступ справа
+            'margin-right': '1em'          // ← отступ до следующего элемента (если есть)
+        });
+
+    // Сам текст рейтинга + голоса — ставим в первый div
+    imdbBlock.find('> div').eq(0)
+        .css({
+            'white-space': 'nowrap',       // не переносим строку
+            'overflow': 'visible',         // разрешаем вылезать, но с отступом
+            'padding-right': '0.5em'       // ← небольшой внутренний отступ справа
+        })
         .html(text);
 
-    // Агрессивно прячем TMDB и KP
-    $('.rate--tmdb, .rate--kp', render).each(function() {
-        $(this)
-            .addClass('hide')
-            .css({
-                'display': 'none !important',   // двойное !important для перекрытия стилей Lampa
-                'visibility': 'hidden',
-                'opacity': '0',
-                'width': '0',
-                'height': '0',
-                'margin': '0',
-                'padding': '0'
-            });
-    });
+    // Дополнительно фиксируем подпись "IMDB" (второй div)
+    imdbBlock.find('> div').eq(1)
+        .css({
+            'font-size': '0.9em',
+            'color': '#999',               // можно сделать чуть серым, если хочешь
+            'margin-left': '0.3em'         // небольшой отступ слева от подписи
+        });
 
-    // Дополнительно убираем возможные пустые места в строке рейтингов
+    // Если остались какие-то следы от TMDB/KP — на всякий случай
+    $('.rate--tmdb, .rate--kp', render).remove();
+
+    // Финальная корректировка строки рейтингов
     $('.full-start-new__rate-line', render).css({
-        'justify-content': 'flex-start',  // сдвигаем всё влево, чтобы не было дыр
-        'gap': '0.5em'                    // уменьшаем расстояние между оставшимися элементами
+        'display': 'flex',
+        'align-items': 'center',
+        'gap': '0.8em',
+        'justify-content': 'flex-start',
+        'flex-wrap': 'nowrap',
+        'overflow': 'hidden'           // на случай переполнения
     });
 }
 
