@@ -1,7 +1,8 @@
 (function () {
     'use strict';
 
-    // Плагин: Только чистый IMDb рейтинг в полной карточке (без голосов)
+    // Плагин: Только чистый IMDb рейтинг в полной карточке
+    // Без количества голосов, без скобок, без наездов
     // Ключ OMDb: 479575b3 (не публикуй публично!)
 
     var API_KEY = '479575b3';
@@ -47,20 +48,20 @@
         var render = Lampa.Activity.active().activity.render();
         $('.wait_rating', render).remove();
 
-        // Показываем чистый рейтинг IMDb без голосов
+        // Показываем только рейтинг IMDb (чистая цифра)
         $('.rate--imdb', render)
             .removeClass('hide')
             .css({
                 'display': 'inline-flex !important',
                 'align-items': 'center',
                 'min-width': '80px',
-                'padding-right': '0.8em',
+                'padding-right': '1em',      // запас справа, чтобы не наезжало на "IMDB"
                 'margin-right': '1em'
             })
             .find('> div').eq(0)
             .text(rating || '—');
 
-        // Полностью удаляем TMDB и KP
+        // Полностью удаляем TMDB и KP из DOM
         $('.rate--tmdb, .rate--kp', render).remove();
 
         // Корректируем строку рейтингов
