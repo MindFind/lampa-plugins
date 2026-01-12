@@ -85,20 +85,7 @@
                     display: 'inline-flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    marginRight: '0.5em'
-
-                    fontSize: '1.45em',          // масштаб относительно блока IMDb
-                    fontWeight: 'semibold',
-                    lineHeight: '1.45em',        // вертикальный «воздух»
-                    padding: '0 0.5em',     // сверху/снизу/слева/справа
-                    borderRadius: '0.23em',
-                    boxSizing: 'border-box',
-                    marginRight: '0.5em',
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    justifyContent: 'center'
-
-                    
+                    marginRight: '0.5em'   
                 });
 
             $(imdbEl).before(votesBox);
