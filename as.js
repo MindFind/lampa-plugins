@@ -75,10 +75,10 @@
                     background: '#c2410c',      // оранжевая капсула
                     color: '#fff',
                     fontFamily: cs.fontFamily,
-                    fontSize: '0.9em',          // масштаб относительно блока IMDb
+                    fontSize: '1em',          // масштаб относительно блока IMDb
                     fontWeight: 'bold',
                     lineHeight: '1.4em',        // вертикальный «воздух»
-                    padding: '0.2em 0.6em',     // сверху/снизу/слева/справа
+                    //padding: '0.2em 0.6em',     // сверху/снизу/слева/справа
                     borderRadius: cs.borderRadius,
                     boxSizing: 'border-box',
                     marginRight: '0.5em',
