@@ -47,41 +47,41 @@
     }
 
     function showRating(rating, votes) {
-        var render = Lampa.Activity.active().activity.render();
-        $('.wait_rating', render).remove();
+    var render = Lampa.Activity.active().activity.render();
+    $('.wait_rating', render).remove();
 
-        // IMDb блок (оценка)
-        var imdbBlock = $('.rate--imdb', render).removeClass('hide');
-        imdbBlock.find('> div').eq(0).text(rating || '—');
+    // Показываем IMDb блок
+    var imdbBlock = $('.rate--imdb', render);
+    imdbBlock.removeClass('hide');
+    imdbBlock.find('> div').eq(0).text(rating || '—');
 
-        // Удаляем TMDB и KP
-        $('.rate--tmdb, .rate--kp', render).remove();
+    // Удаляем TMDB и KP
+    $('.rate--tmdb, .rate--kp', render).remove();
 
-        // Блок голосов — точная копия стиля .rate--imdb
-        if (votes !== 'N/A') {
-            // Копируем ВСЕ классы с блока IMDB
-            var votesBox = $('<div></div>')
-                .addClass(imdbBlock.attr('class'))  // все классы, включая rate--imdb
-                .addClass('imdb-votes-box')          // наш класс для отличия (если нужно)
-                .css(window.getComputedStyle(imdbBlock[0]))  // копируем ВСЕ вычисленные стили
-                .text(votes);  // полное число голосов
+    // Блок голосов — точная копия IMDB по классам и стилю
+    if (votes !== 'N/A') {
+        var votesBox = $('<div></div>')
+            .addClass(imdbBlock.attr('class'))  // копируем ВСЕ классы IMDB (rate--imdb и т.д.)
+            .addClass('imdb-votes-box')          // наш класс для отличия
+            .css('background', '#c2410c !important')  // только фон оранжевый
+            .text(votes);
 
-            // Вставляем перед блоком оценки IMDb
-            imdbBlock.before(votesBox);
-        }
-
-        // Настройка flex-контейнера
-        $('.full-start-new__rate-line', render).css({
-            'display': 'flex',
-            'align-items': 'center',
-            'gap': '0.5em',
-            'justify-content': 'flex-start',
-            'flex-wrap': 'nowrap',
-            'padding': '0',
-            'margin': '0',
-            'background': 'none !important'
-        });
+        // Вставляем перед оценкой
+        imdbBlock.before(votesBox);
     }
+
+    // Настройка строки рейтингов
+    $('.full-start-new__rate-line', render).css({
+        'display': 'flex',
+        'align-items': 'center',
+        'gap': '0.5em',
+        'justify-content': 'flex-start',
+        'flex-wrap': 'nowrap',
+        'padding': '0',
+        'margin': '0',
+        'background': 'none !important'
+    });
+}
 
     function getCache(movieId) {
         var timestamp = Date.now();
