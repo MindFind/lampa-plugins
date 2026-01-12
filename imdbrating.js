@@ -76,9 +76,9 @@
                 .css({
                     background: '#c2410c',
                     color: '#fff',
-                    fontFamily: cs.fontFamily,
-                    fontSize: cs.fontSize,
-                    lineHeight: cs.lineHeight,
+                    fontFamily: '',
+                    fontSize: '',
+                    lineHeight: '',
                     padding: '0 0.5em',
                     borderRadius: '0.3em',
                     display: 'inline-flex',
