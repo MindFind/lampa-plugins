@@ -1,7 +1,7 @@
 (function () {
     'use strict';
 
-    // Плагин: IMDb рейтинг + блок голосов — точная копия стиля возрастной категории
+    // Плагин: IMDb рейтинг + блок голосов — точная копия стиля .rate--imdb
     // Ключ OMDb: 479575b3
 
     var API_KEY = '479575b3';
@@ -50,59 +50,27 @@
         var render = Lampa.Activity.active().activity.render();
         $('.wait_rating', render).remove();
 
-        // Чистый рейтинг IMDb
-        $('.rate--imdb', render)
-            .removeClass('hide')
-            .css({
-                'display': 'inline-flex !important',
-                'align-items': 'center',
-                'background': 'none !important',
-                'border': 'none !important',
-                'padding': '0 !important',
-                'margin': '0 !important',
-                'min-width': 'auto'
-            })
-            .find('> div').eq(0)
-            .text(rating || '—');
+        // IMDb блок (оценка)
+        var imdbBlock = $('.rate--imdb', render).removeClass('hide');
+        imdbBlock.find('> div').eq(0).text(rating || '—');
 
         // Удаляем TMDB и KP
         $('.rate--tmdb, .rate--kp', render).remove();
 
-        // Блок голосов — точная копия стиля возрастной категории
-        var ageBlock = $('.full-start__pg', render);
-        if (ageBlock.length && votes !== 'N/A') {
-            // Копируем ВСЕ классы и вычисленные стили с возрастного блока
-            var ageStyle = window.getComputedStyle(ageBlock[0]);
-
+        // Блок голосов — точная копия стиля .rate--imdb
+        if (votes !== 'N/A') {
+            // Копируем ВСЕ классы с блока IMDB
             var votesBox = $('<div></div>')
-                .addClass(ageBlock.attr('class'))  // все классы, включая full-start__pg
-                .addClass('imdb-votes-box')        // наш класс для отличия (если нужно)
-                .text(votes)
-                .css({
-                    // Копируем все ключевые стили 1 в 1
-                    'background': ageStyle.background,
-                    'backgroundColor': ageStyle.backgroundColor,
-                    'color': ageStyle.color,
-                    'fontSize': ageStyle.fontSize,
-                    'fontWeight': ageStyle.fontWeight,
-                    'fontFamily': ageStyle.fontFamily,
-                    'padding': ageStyle.padding,
-                    'borderRadius': ageStyle.borderRadius,
-                    'border': ageStyle.border,
-                    'boxSizing': ageStyle.boxSizing,
-                    'lineHeight': ageStyle.lineHeight,
-                    'whiteSpace': 'nowrap',
-                    'display': 'inline-flex',
-                    'alignItems': 'center',
-                    'justifyContent': 'center',
-                    'marginRight': '0.6em'
-                });
+                .addClass(imdbBlock.attr('class'))  // все классы, включая rate--imdb
+                .addClass('imdb-votes-box')          // наш класс для отличия (если нужно)
+                .css(window.getComputedStyle(imdbBlock[0]))  // копируем ВСЕ вычисленные стили
+                .text(votes);  // полное число голосов
 
-            // Вставляем перед возрастным блоком
-            ageBlock.before(votesBox);
+            // Вставляем перед блоком оценки IMDb
+            imdbBlock.before(votesBox);
         }
 
-        // Сжимаем строку рейтингов
+        // Настройка flex-контейнера
         $('.full-start-new__rate-line', render).css({
             'display': 'flex',
             'align-items': 'center',
