@@ -78,8 +78,8 @@
                     fontSize: '1.45em',          // масштаб относительно блока IMDb
                     //fontWeight: 'bold',
                     lineHeight: '1.45em',        // вертикальный «воздух»
-                    //padding: '0.2em 0.6em',     // сверху/снизу/слева/справа
-                    borderRadius: cs.borderRadius,
+                    padding: '0 0.5em',     // сверху/снизу/слева/справа
+                    borderRadius: '0.23em',
                     boxSizing: 'border-box',
                     marginRight: '0.5em',
                     display: 'inline-flex',
